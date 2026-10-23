@@ -32,7 +32,7 @@ The analysis therefore combines:
 - Original records: 209,306
 - Final analytical records: 209,275
 - Columns: 24
-- Coverage: 2013–2025
+- Coverage: 2013–2025 (2013 and 2025 are partial years)
 
 Key fields include:
 
@@ -46,7 +46,6 @@ Key fields include:
 - Incapacitating injuries
 - Fatalities
 
-The exact source URL was not included in the project documentation supplied for this README. Add the original dataset URL to this section before publishing the repository.
 
 ## Data Preparation
 
@@ -83,15 +82,16 @@ Because raw counts can be influenced by how frequently a condition occurs, the a
 Clear weather recorded the most injuries:
 
 - 64,288 injuries
-- Approximately 39% of all injuries
-- Clear weather accounted for approximately 79.4% of crashes
+- Approximately 80% of all injuries
+- Clear weather accounted for approximately 79% of crashes
 
 However, Rain had the highest injury rate:
 
 - 41.2 injuries per 100 crashes
-- Overall rate: 10.5 injuries per 100 crashes
+- Overall rate: about 38 injuries per 100 crashes (clear weather: 39.0)
 
 This shows why injury rates provide additional context beyond raw counts.
+The gap is modest: rain is about 8% above the overall rate, so it is a signal to investigate, not proof of a large effect.
 
 ### Lighting
 
