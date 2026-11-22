@@ -1,38 +1,41 @@
 # Traffic Accident Analysis
 
-Road-safety analytics project using MySQL and Power BI to examine which road, weather and lighting conditions are associated with higher injury and crash severity.
+Road-safety analytics project using MySQL and Power BI to examine which weather, lighting and road-surface conditions carry the highest injury risk per crash.
+
+![Traffic Accident Dashboard](Traffic_Dashboard.png)
 
 ## Project Overview
 
-This project analyzes 209,275 cleaned traffic-crash records using SQL and Power BI.
+This project analyses 209,275 cleaned traffic-crash records using SQL and Power BI.
 
-The analysis focuses on a key road-safety question:
+The analysis is built around one road-safety question:
 
-> Which road, weather and lighting conditions are associated with more injuries and more serious crashes?
+> Which weather, lighting and road-surface conditions carry the highest injury risk per crash, and where should an agency focus safety measures first?
 
-Rather than relying only on raw injury counts, the project compares injury rates across conditions because the number of crashes varies substantially by weather, lighting and road conditions.
+Rather than relying only on raw injury counts, the project compares injury rates across conditions, because the number of crashes varies enormously by weather, lighting and road surface.
 
 ## Business Problem
 
-A city transport agency wants to understand which conditions are associated with more injuries and more serious crashes so that road-safety measures can be targeted where they may have the greatest impact.
+A city transport agency wants to know which conditions are associated with more injuries and more serious crashes, so that road-safety measures can be targeted where they may have the greatest impact.
 
-Counting injuries alone can be misleading because most driving occurs in common conditions such as clear weather, daylight and dry roads.
+Counting injuries alone can be misleading, because most driving takes place in common conditions such as clear weather, daylight and dry roads. Those conditions dominate the totals even when each individual crash is no more dangerous.
 
 The analysis therefore combines:
 
 - Crash counts
 - Injury counts
-- Injury rates
-- Incapacitating-injury rates
+- Injury rates per 100 crashes
+- Incapacitating-injury rates per 1,000 crashes
 - Condition-level comparisons
 
 ## Dataset
 
 - Dataset: Traffic_accidents Dataset
+- Source: (https://www.kaggle.com/datasets/oktayrdeki/traffic-accidents)
 - Original records: 209,306
 - Final analytical records: 209,275
 - Columns: 24
-- Coverage: 2013–2025 (2013 and 2025 are partial years)
+- Coverage: 2013–2025
 
 Key fields include:
 
@@ -46,7 +49,6 @@ Key fields include:
 - Incapacitating injuries
 - Fatalities
 
-
 ## Data Preparation
 
 SQL was used as the primary analytical layer.
@@ -54,96 +56,99 @@ SQL was used as the primary analytical layer.
 The preparation workflow included:
 
 - Inspecting table structure and data quality
-- Identifying and removing duplicate records
+- Identifying and removing 31 duplicate records
 - Reviewing unknown values in key categorical fields
 - Preparing date fields
 - Validating the cleaned analytical table
 
-The dataset was reduced from 209,306 original records to 209,275 final analytical records.
+## Definitions
+
+- **Injury rate:** total injuries divided by crashes, multiplied by 100. It counts injured people, so one crash can contribute more than one injury.
+- **Incapacitating-injury rate:** incapacitating injuries divided by crashes, multiplied by 1,000.
+- **Minimum size for ranking conditions:** when conditions are compared, only categories with at least 1,000 crashes are ranked, because rates from very small categories are unreliable.
 
 ## Business Questions
 
-1. Which weather condition has the highest total injuries?
-2. Which lighting condition has the highest and lowest incapacitating injuries?
-3. Which road surface has the most crashes, and what is the most common primary cause within it?
-4. What is the most common first crash type?
-5. In which months does the most common crash type occur most and least?
+Main questions:
 
-Because raw counts can be influenced by how frequently a condition occurs, the analysis also asks:
+1. Which weather conditions carry the highest injury rate per 100 crashes?
+2. Which lighting conditions carry the highest incapacitating-injury rate per 1,000 crashes?
+3. How do injury rates differ by road surface?
+4. How complete is the crash-cause data?
 
-6. Which weather condition has the highest injury rate per 100 crashes?
-7. Which lighting condition has the highest incapacitating-injury rate per 1,000 crashes?
-8. What share of dry-road crashes have no determined cause?
+Supporting questions, based on raw counts:
+
+5. Which weather condition has the most total injuries?
+6. Which lighting condition has the most incapacitating injuries?
+7. Which road surface has the most crashes, and what is the most common cause within it?
+8. What is the most common first crash type?
 
 ## Key Findings
 
 ### Weather
 
-Clear weather recorded the most injuries:
+Clear weather dominates the raw counts. It accounts for about 78.7% of crashes and 80.3% of injuries, simply because most crashes happen in clear weather.
 
-- 64,288 injuries
-- Approximately 80% of all injuries
-- Clear weather accounted for approximately 79% of crashes
+Per crash, the picture is different:
 
-However, Rain had the highest injury rate:
-
-- 41.2 injuries per 100 crashes
-- Overall rate: about 38 injuries per 100 crashes (clear weather: 39.0)
-
-This shows why injury rates provide additional context beyond raw counts.
-The gap is modest: rain is about 8% above the overall rate, so it is a signal to investigate, not proof of a large effect.
+- The overall rate is 38.3 injuries per 100 crashes.
+- Clear weather is 39.0 per 100.
+- Rain is the highest among conditions with at least 1,000 crashes, at 41.2 per 100. That is only about two more injuries per 100 crashes than in clear weather, so the gap is modest.
+- Some smaller categories have higher rates (other 48.3, freezing rain or drizzle 46.1, sleet or hail 46.1, fog, smoke or haze 44.4), but each has fewer than 1,000 crashes, so their rates are less reliable.
+- Snow (30.9 per 100) is lower than clear weather. In this data, severe-looking conditions do not mean more injuries per crash. The reason has not been tested.
 
 ### Lighting
 
-Daylight recorded the most incapacitating injuries:
+Daylight has the most incapacitating injuries in absolute terms, because about 64% of crashes happen in daylight.
 
-- 4,557 incapacitating injuries
+Per 1,000 crashes, low-light conditions carry more risk:
 
-However, Darkness, lighted road had the highest incapacitating-injury rate:
+- Daylight: 34.0
+- Dusk: 35.6
+- Dawn: 43.8
+- Darkness, not lighted: 45.3
+- Darkness, lighted road: 49.3 (the highest, roughly 45% above daylight)
+- Overall: 38.1
 
-- 49.3 incapacitating injuries per 1,000 crashes
+Darkness on a lighted road is slightly higher than darkness on an unlit road. The reason has not been tested. The Unknown lighting category (13.8 per 1,000) is small and likely reflects incomplete recording, so it is not interpreted.
 
-The Unknown lighting category had the fewest incapacitating injuries, but its small size makes it unsuitable for strong interpretation.
+### Road Surface
 
-### Road Surface and Contributory Cause
+Dry roads recorded the most crashes. Differences in injury risk between surfaces are small:
 
-Dry roads recorded the most crashes.
+- Dry: 39.6 injuries per 100 crashes and 40.5 incapacitating injuries per 1,000
+- Wet: 41.3 per 100 and 37.7 per 1,000
+- Snow or slush: 27.6 per 100 and 21.3 per 1,000
+- Ice: 25.9 per 100 and 29.2 per 1,000
+
+Wet roads have a slightly higher injury rate than dry roads but a lower incapacitating-injury rate. Snowy and icy surfaces show lower rates per crash; the reason has not been tested.
+
+### Crash Cause
 
 Within dry-road crashes, the most common primary cause was Unable to determine:
 
 - 41,610 crashes
 - 26.7% of dry-road crashes
 
-This represents a data-quality gap because the largest cause category does not explain why the crashes occurred.
+This is a data-quality gap, because the largest cause category does not explain why the crashes occurred.
 
-### Crash Type
+Categories recorded as Unknown (for weather, lighting and road surface) also show much lower injury rates than the rest of the data. This may reflect incomplete recording rather than safer conditions.
 
-Turning was the most common first crash type:
+### Supporting Observations
 
-- 64,150 crashes
-- 30.7% of all crashes
-
-### Monthly Pattern
-
-The most common crash type, No injury / drive away, occurred most often in October:
-
-- 11,136 crashes
-
-It occurred least often in April:
-
-- 8,463 crashes
-
-Monthly comparisons should be interpreted carefully because month length and the number of years represented affect raw counts, and 2025 is a partial year.
+- Turning was the most common first crash type: 64,150 crashes, 30.7% of all crashes.
+- The most common crash type, No injury / drive away, peaked in October (11,136 crashes) and was lowest in April (8,463). Monthly comparisons need care, because month length and the number of years represented affect raw counts, and 2025 is a partial year.
 
 ## Recommendations
 
-1. Prioritize safety measures for Rain and Darkness, lighted road, where risk per crash is highest rather than focusing only on conditions with the most crashes.
-2. Improve crash-cause recording because a large share of records have no determined cause.
-3. Investigate Turning crashes, particularly at intersections, because Turning is the most common first crash type.
+1. Prioritise low-light conditions, especially darkness on lighted roads, where the incapacitating-injury rate per crash is roughly 30% to 45% above daylight.
+2. Treat rain as a secondary focus. Its injury rate is the highest among larger weather categories, but the gap over clear weather is small.
+3. Improve crash-cause recording, because a large share of records have no determined cause, and check whether Unknown categories reflect missing injury data.
+4. Investigate turning crashes, because Turning is the most common first crash type.
 
 ## Dashboard
 
-The Power BI dashboard presents the analyzed traffic-accident patterns through interactive visualizations covering:
+The Power BI dashboard presents the analysed patterns through interactive visualisations covering:
 
 - Weather
 - Lighting
@@ -156,10 +161,11 @@ The Power BI dashboard presents the analyzed traffic-accident patterns through i
 ## Limitations
 
 - This is observational data. The findings show associations, not causal relationships.
-- Crash counts reflect how much driving occurs in each condition.
-- The dataset does not contain traffic-volume figures, so crash rates per vehicle or per mile cannot be calculated.
+- Crash counts reflect how much driving takes place in each condition.
+- The dataset contains no traffic-volume figures, so rates per vehicle or per mile cannot be calculated. The rates here are per crash.
 - 2013 and 2025 are partial years, so monthly and annual comparisons may be affected.
-- Unknown categories should be interpreted cautiously, especially where the number of records is small.
+- Unknown categories and categories with few crashes should be interpreted cautiously.
+- Rates for categories below 1,000 crashes are shown for completeness but are not used for ranking.
 
 ## Tools
 
@@ -171,20 +177,21 @@ The Power BI dashboard presents the analyzed traffic-accident patterns through i
 
 ## Project Files
 
-- SQL data-cleaning script
-- SQL exploratory data-analysis script
-- Traffic accidents dataset
-- Power BI report
-- Dashboard screenshot
-- Project documentation
+- `Traffic_Accident_data_cleaning.sql`: SQL data-cleaning script
+- `Traffic_Accident_EDA.sql`: SQL exploratory data-analysis script
+- `Traffic_Accidents_Dashboard.pbix`: Power BI report
+- `Traffic_Dashboard.png`: dashboard screenshot
+- `Traffic_Accident_Project_Documentation.docx`: project documentation
+- `traffic_accidents`: Dataset
 
 ## Outcome
 
 The project demonstrates an end-to-end road-safety analytics workflow:
 
-SQL data cleaning → Exploratory analysis → Rate-based risk analysis → Power BI visualization → Business recommendations
+SQL data cleaning → Exploratory analysis → Rate-based risk analysis → Power BI visualisation → Business recommendations
 
 ## Author
 
 Sofeeyah Adekunle
+
 Data Analyst
